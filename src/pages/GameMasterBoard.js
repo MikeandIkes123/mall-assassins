@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import CreateTask from '../components/gameMasterComponents/CreateTask';
 import {
   Flex,
   Heading,
@@ -10,70 +11,83 @@ import {
   Avatar,
   Spacer,
   Divider,
+  AvatarGroup,
+  Image
 } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
+import { ActiveTasks } from '../components/gameMasterComponents/ActiveTasks.js'
+import PlayerList from '../components/gameMasterComponents/PlayerList';
 
 const GameMasterBoard = () => {
   const { roomID } = useParams();
 
+  const [alivePlayers, setAlivePlayers] = useState([
+    'Player 1',
+    'Player 2',
+    'Player 3',
+  ]);
+  const [deadPlayers, setDeadPlayers] = useState([]);
+
+  // Function to eliminate a player from the game
+  const eliminatePlayer = (playerName) => {
+    setAlivePlayers(alivePlayers.filter((player) => player !== playerName));
+    setDeadPlayers([...deadPlayers, playerName]);
+  };
+
   return (
     <Flex direction="column" p={5}>
       <Flex justify="space-between" alignItems="center" mb={5}>
-        <Heading size="lg">Mall Assassins</Heading>
-        <Flex alignItems="center">
-          <Input placeholder="Enter URL" size="sm" maxWidth="300px" mr={2} />
-          <Button colorScheme="red">End Game</Button>
-        </Flex>
+      <Image src="/logo.png" alt="Mall Assassins Logo" boxSize="50px" objectFit="contain" />
+      <Flex alignItems="center">
+        <Button colorScheme="red">End Game</Button>
       </Flex>
+    </Flex>
 
       <Flex>
-        <Stack spacing={4} width="30%">
-          <Box bg="teal.50" p={4} borderRadius="md">
-            <Heading size="md">Active Tasks</Heading>
-            <Text fontSize="sm">Manage game tasks here.</Text>
-          </Box>
-          <Box bg="teal.50" p={4} borderRadius="md">
-            <Heading size="md">Task Bank</Heading>
-            <Button as={Link} to="/tasks" colorScheme="teal" size="sm">
-              Back To Tasks
-            </Button>
-          </Box>
-        </Stack>
+        <Box flex={1} p={4}>
+          <Stack spacing={4}>
+            <Box bg="teal.50" p={4} borderRadius="md">
+              <Heading size="md">Active Missions</Heading>
+              <ActiveTasks />
+            </Box>
+            <Box bg="teal.50" p={4} borderRadius="md">
+              <Heading size="sm" >Task Bank </Heading>
+              <CreateTask />
+              {/* <Button as={Link} to="/tasks" colorScheme="teal" size="sm">Back To Tasks</Button> */}
+              {/* Add task bank UI components here */}
+            </Box>
+          </Stack>
+        </Box>
 
-        <Flex direction="column" width="65%" ml={6}>
+        <Box flex={1.5} p={4}>
           <Box bg="gray.100" p={4} borderRadius="md" mb={5}>
-            <Heading size="md">Game Title</Heading>
+            <Heading size="md">Mall Assassins Command Center</Heading>
             <Text fontSize="sm" mt={4}>
-              Manage your game title and image here.
+              Manage the title and visuals of your top-secret mission.
             </Text>
             <Flex mt={4}>
               <Button colorScheme="red" size="sm" mr={2}>
-                Deny
+                Abort
               </Button>
               <Button colorScheme="green" size="sm">
-                Approve
+                Execute
               </Button>
             </Flex>
           </Box>
+        </Box>
 
-          <Flex direction="column">
-            <PlayerList title="Alive Players (5)" playerCount={5} taskCount={1} />
+        <Box flex={1} p={4}>
+            <PlayerList
+              isAlive={true}
+            />
             <Divider mt={3} />
-            <PlayerList title="Dead Players (12)" playerCount={12} taskCount={1} />
-          </Flex>
-        </Flex>
+            <PlayerList
+              isAlive={false}
+            />
+        </Box>
       </Flex>
     </Flex>
   );
 };
-
-const PlayerList = ({ title, playerCount, taskCount }) => (
-  <Box bg="gray.100" p={4} borderRadius="md" mb={3}>
-    <Heading size="md">{title}</Heading>
-    <Text fontSize="sm" mt={2}>
-      {playerCount === 1 ? '• 1 Player' : `• ${playerCount} Players`}
-    </Text>
-  </Box>
-);
 
 export default GameMasterBoard;
